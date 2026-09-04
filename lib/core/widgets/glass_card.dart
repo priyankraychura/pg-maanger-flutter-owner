@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../extensions/context_extensions.dart';
 import '../theme/app_spacing.dart';
 import 'glass_container.dart';
 
@@ -68,11 +69,13 @@ class GlassCard extends ConsumerWidget {
                 ),
                 if (subtitle != null) ...[
                   const SizedBox(height: AppSpacing.xxs),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade600,
+                  Builder(
+                    builder: (context) => Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.textSecondary,
+                      ),
                     ),
                   ),
                 ],

@@ -52,6 +52,12 @@ class DashboardPage extends ConsumerWidget {
               onRefresh: () async {
                 ref.invalidate(dashboardProvider);
                 ref.invalidate(pgListProvider);
+                // Wait for the fresh data so the refresh spinner reflects the
+                // actual reload instead of vanishing immediately.
+                await Future.wait([
+                  ref.read(pgListProvider.future),
+                  ref.read(dashboardProvider.future),
+                ]).catchError((_) => <Object>[]);
               },
               child: CustomScrollView(
                 slivers: [
@@ -97,7 +103,7 @@ class DashboardPage extends ConsumerWidget {
                               ),
                               // Notification bell with dot badge
                               GestureDetector(
-                                onTap: () => context.push('/settings'),
+                                onTap: () => context.push('/notices'),
                                 child: Stack(
                                   children: [
                                     Container(

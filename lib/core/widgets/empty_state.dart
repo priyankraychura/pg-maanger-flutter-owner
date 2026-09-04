@@ -10,7 +10,12 @@ class EmptyState extends StatelessWidget {
   final String title;
   final String? subtitle;
   final String? actionLabel;
+  final IconData? actionIcon;
   final VoidCallback? onAction;
+
+  /// When true, the action renders as a prominent filled button instead of a
+  /// plain text button.
+  final bool primaryAction;
 
   const EmptyState({
     super.key,
@@ -18,8 +23,38 @@ class EmptyState extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.actionLabel,
+    this.actionIcon,
     this.onAction,
+    this.primaryAction = false,
   });
+
+  Widget _buildAction() {
+    final label = Text(actionLabel!);
+    final icon = actionIcon;
+
+    if (primaryAction) {
+      final style = ElevatedButton.styleFrom(
+        minimumSize: const Size(0, AppSpacing.buttonHeight),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
+      );
+      return icon != null
+          ? ElevatedButton.icon(
+              onPressed: onAction,
+              style: style,
+              icon: Icon(icon, size: AppSpacing.iconMd),
+              label: label,
+            )
+          : ElevatedButton(onPressed: onAction, style: style, child: label);
+    }
+
+    return icon != null
+        ? TextButton.icon(
+            onPressed: onAction,
+            icon: Icon(icon, size: AppSpacing.iconMd),
+            label: label,
+          )
+        : TextButton(onPressed: onAction, child: label);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,10 +102,7 @@ class EmptyState extends StatelessWidget {
             ],
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: AppSpacing.xxl),
-              TextButton(
-                onPressed: onAction,
-                child: Text(actionLabel!),
-              ),
+              _buildAction(),
             ],
           ],
         ),

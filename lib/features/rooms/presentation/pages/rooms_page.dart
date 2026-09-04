@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -29,7 +30,12 @@ class RoomsPage extends StatelessWidget {
         showBackButton: false,
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.all(AppSpacing.screenPadding),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.screenPadding,
+          AppSpacing.screenPadding,
+          AppSpacing.screenPadding,
+          context.bottomNavInset,
+        ),
         itemCount: rooms.length,
         itemBuilder: (context, index) {
           final room = rooms[index];
@@ -91,7 +97,7 @@ class RoomsPage extends StatelessWidget {
         },
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80.0),
+        padding: EdgeInsets.only(bottom: context.fabBottomInset),
         child: FloatingActionButton(
           onPressed: () {},
           backgroundColor: AppColors.primaryOrange,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/glass_app_bar.dart';
 import '../providers/dashboard_provider.dart';
 import '../widgets/recent_activity_tile.dart';
@@ -23,7 +24,11 @@ class RecentActivityPage extends ConsumerWidget {
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (data) {
           if (data.recentActivity.isEmpty) {
-            return const Center(child: Text('No recent activity.'));
+            return const EmptyState(
+              icon: Icons.history_rounded,
+              title: 'No Recent Activity',
+              subtitle: 'Activity from your PG will show up here.',
+            );
           }
 
           return ListView.builder(

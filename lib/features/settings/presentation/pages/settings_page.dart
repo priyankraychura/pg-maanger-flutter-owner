@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -26,7 +27,12 @@ class SettingsPage extends ConsumerWidget {
         showBackButton: false,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.screenPadding),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.screenPadding,
+          AppSpacing.screenPadding,
+          AppSpacing.screenPadding,
+          context.bottomNavInset,
+        ),
         children: [
           // Profile Card
           GlassCard(
@@ -140,8 +146,6 @@ class SettingsPage extends ConsumerWidget {
               }
             },
           ),
-
-          const SizedBox(height: AppSpacing.massive),
         ],
       ),
     );

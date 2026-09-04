@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/glass_app_bar.dart';
 
 class StaffPage extends StatelessWidget {
@@ -14,29 +12,14 @@ class StaffPage extends StatelessWidget {
         title: 'Staff Management',
         showBackButton: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.badge_rounded, size: 80, color: AppColors.lightTextTertiary),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'No Staff Added',
-              style: AppTextStyles.h2.copyWith(color: AppColors.lightTextSecondary),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Manage your managers and staff here.',
-              style: AppTextStyles.body.copyWith(color: AppColors.lightTextTertiary),
-            ),
-            const SizedBox(height: AppSpacing.xl),
-            ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.person_add_rounded),
-              label: const Text('Add Staff'),
-            ),
-          ],
-        ),
+      body: EmptyState(
+        icon: Icons.badge_rounded,
+        title: 'No Staff Added',
+        subtitle: 'Manage your managers and staff here.',
+        actionLabel: 'Add Staff',
+        actionIcon: Icons.person_add_rounded,
+        primaryAction: true,
+        onAction: () {},
       ),
     );
   }

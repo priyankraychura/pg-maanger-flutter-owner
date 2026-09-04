@@ -51,6 +51,15 @@ extension ContextExtensions on BuildContext {
   /// Bottom safe area padding.
   double get bottomPadding => MediaQuery.of(this).padding.bottom;
 
+  /// Space to reserve at the bottom of scrollable content on the main tab
+  /// screens so the last item isn't hidden behind the floating bottom nav bar.
+  /// (nav height 68 + 12 margin + breathing room + device safe-area inset)
+  double get bottomNavInset => 96 + bottomPadding;
+
+  /// Bottom offset for a [FloatingActionButton] so it floats clear of the
+  /// floating bottom navigation bar.
+  double get fabBottomInset => 72 + bottomPadding;
+
   /// Top safe area padding.
   double get topPadding => MediaQuery.of(this).padding.top;
 }
