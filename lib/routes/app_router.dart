@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/auth/presentation/pages/login_page.dart';
+import '../features/auth/presentation/pages/register_page.dart';
 import '../features/auth/presentation/pages/forgot_password_page.dart';
 import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/navigation/navigation_shell.dart';
@@ -25,7 +26,9 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/login',
     redirect: (context, state) {
-      final isLoggingIn = state.uri.path == '/login' || state.uri.path == '/forgot-password';
+      final isLoggingIn = state.uri.path == '/login' ||
+          state.uri.path == '/register' ||
+          state.uri.path == '/forgot-password';
       final isLoggedIn = authState.hasValue && authState.value != null;
 
       if (!isLoggedIn && !isLoggingIn) return '/login';
@@ -38,6 +41,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterPage(),
       ),
       GoRoute(
         path: '/forgot-password',

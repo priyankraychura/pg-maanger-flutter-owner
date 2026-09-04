@@ -30,6 +30,28 @@ class AuthMockDatasource implements AuthRepository {
   }
 
   @override
+  Future<OwnerEntity> register(RegistrationData data) async {
+    await Future.delayed(
+      const Duration(milliseconds: AppConstants.mockApiDelay),
+    );
+
+    return OwnerEntity(
+      id: 'owner_${DateTime.now().millisecondsSinceEpoch}',
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      role: UserRole.admin,
+      assignedPgIds: const ['pg_new_001'],
+      accessibleModules: [
+        'dashboard', 'rooms', 'tenants', 'payments',
+        'complaints', 'notices', 'menu', 'wifi',
+        'leave_notices', 'invitations', 'roles', 'settings',
+      ],
+      joinDate: DateTime.now(),
+    );
+  }
+
+  @override
   Future<void> forgotPassword({required String email}) async {
     await Future.delayed(
       const Duration(milliseconds: AppConstants.mockApiDelay),

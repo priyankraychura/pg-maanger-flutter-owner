@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../injection/service_locator.dart';
 import '../../domain/entities/owner_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/auth_repository.dart' show AuthRepository, RegistrationData;
 
 /// Auth state: null = not authenticated, OwnerEntity = authenticated.
 class AuthNotifier extends StateNotifier<AsyncValue<OwnerEntity?>> {
@@ -14,6 +14,17 @@ class AuthNotifier extends StateNotifier<AsyncValue<OwnerEntity?>> {
     state = const AsyncValue.loading();
     try {
       final owner = await _repository.login(email: email, password: password);
+      state = AsyncValue.data(owner);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  /// Register a new owner + their first PG, then sign them in.
+  Future<void> register(RegistrationData data) async {
+    state = const AsyncValue.loading();
+    try {
+      final owner = await _repository.register(data);
       state = AsyncValue.data(owner);
     } catch (e, st) {
       state = AsyncValue.error(e, st);

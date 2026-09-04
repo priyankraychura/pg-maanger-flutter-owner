@@ -288,6 +288,33 @@ class _LoginPageState extends ConsumerState<LoginPage>
                 label: const Text('Continue with Dev Login'),
               ),
             ),
+
+            const SizedBox(height: AppSpacing.sm),
+
+            // Register link
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Don't have an account?",
+                  style: AppTextStyles.body.copyWith(
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
+                  ),
+                ),
+                TextButton(
+                  onPressed: isLoading ? null : () => context.push('/register'),
+                  style: TextButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text('Create account'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
