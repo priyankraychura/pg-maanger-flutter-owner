@@ -58,7 +58,12 @@ extension ContextExtensions on BuildContext {
 
   /// Bottom offset for a [FloatingActionButton] so it floats clear of the
   /// floating bottom navigation bar.
-  double get fabBottomInset => 72 + bottomPadding;
+  ///
+  /// The FAB's host [Scaffold] already lifts it above the device safe-area
+  /// inset, so this only needs to add the nav bar's own visual footprint
+  /// (nav height 68 + bottom margin 12). Do NOT add [bottomPadding] here or
+  /// the safe area gets counted twice and the FAB floats too high.
+  double get fabBottomInset => 80;
 
   /// Top safe area padding.
   double get topPadding => MediaQuery.of(this).padding.top;
