@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
+import 'glass_card.dart';
 
 /// Compact stat card for dashboard metrics.
 /// Displays an icon, label, value, and optional trend indicator.
+/// Features a colored top accent strip and circular icon background.
+/// Built on top of the common [GlassCard] component.
 class StatCard extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -31,43 +34,72 @@ class StatCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final color = iconColor ?? AppColors.primaryOrange;
 
-    return GestureDetector(
+    return GlassCard(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: isDark
-              ? AppColors.darkSurface.withValues(alpha: 0.85)
-              : AppColors.lightSurface.withValues(alpha: 0.85),
-          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-          border: Border.all(
-            color: isDark
-                ? AppColors.darkGlassBorder.withValues(alpha: 0.15)
-                : AppColors.lightGlassBorder.withValues(alpha: 0.3),
-            width: AppSpacing.glassBorderWidth,
+      padding: EdgeInsets.zero,
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      borderColor: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Colored accent strip at top
+          Container(
+            height: 3,
+            color: color,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.lg,
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Row(
               children: [
+                // Circular icon background
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: color, size: AppSpacing.iconMd),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: AppSpacing.iconMd,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                // Label on top, value below
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        label,
+                        style: AppTextStyles.caption.copyWith(
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      Text(
+                        value,
+                        style: AppTextStyles.h2.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.lightTextPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
                 if (trend != null)
                   Container(
@@ -76,38 +108,43 @@ class StatCard extends StatelessWidget {
                       vertical: AppSpacing.xxs,
                     ),
                     decoration: BoxDecoration(
-                      color: (isTrendPositive ? AppColors.success : AppColors.error)
+                      color: (isTrendPositive
+                              ? AppColors.success
+                              : AppColors.error)
                           .withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusRound),
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusRound),
                     ),
-                    child: Text(
-                      trend!,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: isTrendPositive ? AppColors.success : AppColors.error,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isTrendPositive
+                              ? Icons.trending_up_rounded
+                              : Icons.trending_down_rounded,
+                          size: 10,
+                          color: isTrendPositive
+                              ? AppColors.success
+                              : AppColors.error,
+                        ),
+                        const SizedBox(width: 2),
+                        Text(
+                          trend!,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: isTrendPositive
+                                ? AppColors.success
+                                : AppColors.error,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              value,
-              style: AppTextStyles.h2.copyWith(
-                fontWeight: FontWeight.w700,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xxs),
-            Text(
-              label,
-              style: AppTextStyles.caption.copyWith(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

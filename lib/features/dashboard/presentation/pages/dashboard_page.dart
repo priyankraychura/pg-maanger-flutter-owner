@@ -9,7 +9,7 @@ import '../../../../core/widgets/common_loader.dart';
 import '../../../../core/widgets/stat_card.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/glass_card.dart';
-import '../../../../core/widgets/status_badge.dart';
+
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/providers/pg_selection_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -74,16 +74,19 @@ class DashboardPage extends ConsumerWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Welcome back,',
-                                      style: AppTextStyles.body.copyWith(
+                                      'Welcome back 👋',
+                                      style: AppTextStyles.bodyLarge.copyWith(
                                         color: isDark
                                             ? AppColors.darkTextSecondary
                                             : AppColors.lightTextSecondary,
                                       ),
                                     ),
+                                    const SizedBox(height: AppSpacing.xxs),
                                     Text(
                                       owner?.name ?? 'Owner',
                                       style: AppTextStyles.h1.copyWith(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.w700,
                                         color: isDark
                                             ? AppColors.darkTextPrimary
                                             : AppColors.lightTextPrimary,
@@ -92,33 +95,65 @@ class DashboardPage extends ConsumerWidget {
                                   ],
                                 ),
                               ),
+                              // Notification bell with dot badge
                               GestureDetector(
                                 onTap: () => context.push('/settings'),
-                                child: Container(
-                                  padding: const EdgeInsets.all(AppSpacing.md),
-                                  decoration: BoxDecoration(
-                                    color: isDark
-                                        ? AppColors.darkSurface
-                                        : AppColors.lightSurface,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: isDark
-                                          ? AppColors.darkGlassBorder
-                                          : AppColors.lightGlassBorder,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(AppSpacing.md),
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? AppColors.darkSurface
+                                            : AppColors.lightSurface,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: isDark
+                                              ? AppColors.darkGlassBorder
+                                              : AppColors.lightGlassBorder,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black
+                                                .withValues(alpha: 0.04),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        Icons.notifications_outlined,
+                                        color: isDark
+                                            ? AppColors.darkTextPrimary
+                                            : AppColors.lightTextPrimary,
+                                        size: AppSpacing.iconLg,
+                                      ),
                                     ),
-                                  ),
-                                  child: Icon(
-                                    Icons.notifications_outlined,
-                                    color: isDark
-                                        ? AppColors.darkTextPrimary
-                                        : AppColors.lightTextPrimary,
-                                    size: AppSpacing.iconLg,
-                                  ),
+                                    // Notification dot
+                                    Positioned(
+                                      right: 10,
+                                      top: 10,
+                                      child: Container(
+                                        width: 9,
+                                        height: 9,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.error,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: isDark
+                                                ? AppColors.darkBackground
+                                                : AppColors.lightBackground,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: AppSpacing.lg),
+                          const SizedBox(height: AppSpacing.xl),
 
                           // PG Switcher
                           if (pgs.length > 1)
@@ -137,6 +172,13 @@ class DashboardPage extends ConsumerWidget {
                                       ? AppColors.darkGlassBorder.withValues(alpha: 0.15)
                                       : AppColors.lightGlassBorder.withValues(alpha: 0.3),
                                 ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.03),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
@@ -157,12 +199,20 @@ class DashboardPage extends ConsumerWidget {
                                       value: pg.id,
                                       child: Row(
                                         children: [
-                                          const Icon(
-                                            Icons.apartment_rounded,
-                                            size: AppSpacing.iconMd,
-                                            color: AppColors.primaryOrange,
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.primaryOrange
+                                                  .withValues(alpha: 0.1),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(
+                                              Icons.apartment_rounded,
+                                              size: AppSpacing.iconSm,
+                                              color: AppColors.primaryOrange,
+                                            ),
                                           ),
-                                          const SizedBox(width: AppSpacing.sm),
+                                          const SizedBox(width: AppSpacing.md),
                                           Expanded(
                                             child: Text(
                                               pg.name,
@@ -182,22 +232,43 @@ class DashboardPage extends ConsumerWidget {
                               ),
                             )
                           else if (selectedPg != null)
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.apartment_rounded,
-                                  size: AppSpacing.iconMd,
-                                  color: AppColors.primaryOrange,
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Text(
-                                  selectedPg.name,
-                                  style: AppTextStyles.bodyLarge.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.primaryOrange,
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                                vertical: AppSpacing.md,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryOrange
+                                    .withValues(alpha: 0.08),
+                                borderRadius:
+                                    BorderRadius.circular(AppSpacing.radiusLg),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryOrange
+                                          .withValues(alpha: 0.15),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.apartment_rounded,
+                                      size: AppSpacing.iconSm,
+                                      color: AppColors.primaryOrange,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: AppSpacing.md),
+                                  Text(
+                                    selectedPg.name,
+                                    style: AppTextStyles.bodyLarge.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primaryOrange,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                         ],
                       ),
@@ -235,167 +306,378 @@ class _DashboardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final occupancyPercent = data.totalBeds > 0
+        ? (data.occupiedBeds / data.totalBeds)
+        : 0.0;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: AppSpacing.xxl),
+          const SizedBox(height: AppSpacing.xxxl),
 
-          // Stats Grid
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: AppSpacing.md,
-            mainAxisSpacing: AppSpacing.md,
-            childAspectRatio: 1.15,
-            children: [
-              StatCard(
-                icon: Icons.bed_rounded,
-                label: 'Total Beds',
-                value: '${data.totalBeds}',
-                iconColor: AppColors.primaryOrange,
-              ),
-              StatCard(
-                icon: Icons.check_circle_rounded,
-                label: 'Occupied',
-                value: '${data.occupiedBeds}',
-                iconColor: AppColors.success,
-                trend: '${data.collectionRate.toStringAsFixed(0)}%',
-                isTrendPositive: true,
-              ),
-              StatCard(
-                icon: Icons.hotel_rounded,
-                label: 'Available',
-                value: '${data.availableBeds}',
-                iconColor: AppColors.info,
-              ),
-              StatCard(
-                icon: Icons.people_rounded,
-                label: 'Tenants',
-                value: '${data.totalTenants}',
-                iconColor: AppColors.accentTeal,
-              ),
-              StatCard(
-                icon: Icons.pending_actions_rounded,
-                label: 'Pending Approvals',
-                value: '${data.pendingApprovals}',
-                iconColor: AppColors.warning,
-              ),
-              StatCard(
-                icon: Icons.currency_rupee_rounded,
-                label: 'Revenue',
-                value: Formatters.currency(data.totalRevenue),
-                iconColor: AppColors.success,
-              ),
-            ],
-          ),
+          // ─── Overview Header ──────────────────────────
+          const SectionHeader(title: 'Overview'),
 
-          const SizedBox(height: AppSpacing.xxl),
-
-          // Quick Actions
-          const SectionHeader(title: 'Quick Actions'),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          // ─── Hero Stat Cards (Primary KPIs) ───────────
+          IntrinsicHeight(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                QuickActionCard(
-                  icon: Icons.person_add_rounded,
-                  label: 'Add Tenant',
-                  color: AppColors.primaryOrange,
-                  onTap: () => context.push('/invitations'),
+                Expanded(
+                  child: StatCard(
+                    icon: Icons.bed_rounded,
+                    label: 'Total Beds',
+                    value: '${data.totalBeds}',
+                    iconColor: AppColors.primaryOrange,
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.md),
-                QuickActionCard(
-                  icon: Icons.campaign_rounded,
-                  label: 'Issue Notice',
-                  color: AppColors.info,
-                  onTap: () => context.push('/notices'),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                QuickActionCard(
-                  icon: Icons.report_problem_rounded,
-                  label: 'Complaints',
-                  color: AppColors.warning,
-                  onTap: () => context.push('/complaints'),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                QuickActionCard(
-                  icon: Icons.restaurant_menu_rounded,
-                  label: 'Menu',
-                  color: AppColors.accentTeal,
-                  onTap: () => context.push('/menu'),
+                Expanded(
+                  child: StatCard(
+                    icon: Icons.check_circle_rounded,
+                    label: 'Occupied',
+                    value: '${data.occupiedBeds}',
+                    iconColor: AppColors.success,
+                    trend: '${data.collectionRate.toStringAsFixed(0)}%',
+                    isTrendPositive: true,
+                  ),
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: AppSpacing.xxl),
+          const SizedBox(height: AppSpacing.lg),
 
-          // Pending Approvals
-          if (data.pendingApprovals > 0) ...[
-            GlassCard(
-              onTap: () => context.push('/tenants'),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: AppColors.warning.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          // ─── Occupancy Progress Bar ────────────────────
+          GlassCard(
+            margin: EdgeInsets.zero,
+            borderRadius: AppSpacing.radiusLg,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Occupancy Rate',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.pending_actions_rounded,
-                      color: AppColors.warning,
-                      size: AppSpacing.iconLg,
+                    Text(
+                      '${(occupancyPercent * 100).toStringAsFixed(0)}%',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryOrange,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusRound),
+                  child: LinearProgressIndicator(
+                    value: occupancyPercent,
+                    minHeight: 8,
+                    backgroundColor: isDark
+                        ? AppColors.darkGlassBorder.withValues(alpha: 0.15)
+                        : AppColors.lightGlassBorder.withValues(alpha: 0.4),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      occupancyPercent > 0.85
+                          ? AppColors.success
+                          : occupancyPercent > 0.5
+                              ? AppColors.primaryOrange
+                              : AppColors.warning,
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.lg),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${data.pendingApprovals} Pending Approvals',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xxs),
-                        Text(
-                          'Review tenant applications',
-                          style: AppTextStyles.caption.copyWith(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
-                          ),
-                        ),
-                      ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${data.occupiedBeds} occupied',
+                      style: AppTextStyles.caption.copyWith(
+                        color: isDark
+                            ? AppColors.darkTextTertiary
+                            : AppColors.lightTextTertiary,
+                      ),
                     ),
-                  ),
-                  const StatusBadge(
-                    label: 'Review',
-                    type: StatusType.warning,
-                    small: true,
-                  ),
-                ],
-              ),
+                    Text(
+                      '${data.availableBeds} available',
+                      style: AppTextStyles.caption.copyWith(
+                        color: isDark
+                            ? AppColors.darkTextTertiary
+                            : AppColors.lightTextTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: AppSpacing.sm),
+          ),
+
+          const SizedBox(height: AppSpacing.lg),
+
+          // ─── Secondary Stats Grid ─────────────────────
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: StatCard(
+                    icon: Icons.hotel_rounded,
+                    label: 'Available',
+                    value: '${data.availableBeds}',
+                    iconColor: AppColors.info,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: StatCard(
+                    icon: Icons.people_rounded,
+                    label: 'Tenants',
+                    value: '${data.totalTenants}',
+                    iconColor: AppColors.accentTeal,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: StatCard(
+                    icon: Icons.pending_actions_rounded,
+                    label: 'Pending',
+                    value: '${data.pendingApprovals}',
+                    iconColor: AppColors.warning,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: StatCard(
+                    icon: Icons.currency_rupee_rounded,
+                    label: 'Revenue',
+                    value: Formatters.currency(data.totalRevenue),
+                    iconColor: AppColors.success,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.xxxl),
+
+          // ─── Quick Actions ────────────────────────────
+          const SectionHeader(title: 'Quick Actions'),
+          _QuickActionsRow(),
+
+          const SizedBox(height: AppSpacing.xxxl),
+
+          // ─── Pending Approvals Banner ─────────────────
+          if (data.pendingApprovals > 0) ...[
+            _PendingApprovalsBanner(
+              count: data.pendingApprovals,
+              onTap: () => context.push('/tenants'),
+            ),
+            const SizedBox(height: AppSpacing.lg),
           ],
 
-          // Recent Activity
+          // ─── Recent Activity ──────────────────────────
           SectionHeader(
             title: 'Recent Activity',
             actionLabel: 'View All',
             onAction: () => context.push('/recent-activity'),
           ),
-          ...data.recentActivity.take(5).map(
-            (activity) => RecentActivityTile(activity: activity),
+          ...data.recentActivity.take(4).toList().asMap().entries.map(
+            (entry) => RecentActivityTile(
+              activity: entry.value,
+              showDivider: entry.key < data.recentActivity.take(4).length - 1,
+            ),
           ),
 
           const SizedBox(height: AppSpacing.massive + AppSpacing.xxl),
+        ],
+      ),
+    );
+  }
+}
+
+/// Quick actions horizontal scroll with gradient fade hint.
+class _QuickActionsRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    return ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Colors.white,
+            Colors.white,
+            Colors.white,
+            Colors.white.withValues(alpha: 0.0),
+          ],
+          stops: const [0.0, 0.7, 0.92, 1.0],
+        ).createShader(bounds);
+      },
+      blendMode: BlendMode.dstIn,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.only(right: AppSpacing.xxxl),
+        child: Row(
+          children: [
+            QuickActionCard(
+              icon: Icons.person_add_rounded,
+              label: 'Add Tenant',
+              color: AppColors.primaryOrange,
+              onTap: () => context.push('/invitations'),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            QuickActionCard(
+              icon: Icons.campaign_rounded,
+              label: 'Notices',
+              color: AppColors.info,
+              onTap: () => context.push('/notices'),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            QuickActionCard(
+              icon: Icons.report_problem_rounded,
+              label: 'Complaints',
+              color: AppColors.warning,
+              onTap: () => context.push('/complaints'),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            QuickActionCard(
+              icon: Icons.restaurant_menu_rounded,
+              label: 'Menu',
+              color: AppColors.accentTeal,
+              onTap: () => context.push('/menu'),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            QuickActionCard(
+              icon: Icons.account_balance_wallet_rounded,
+              label: 'Payments',
+              color: AppColors.success,
+              onTap: () => context.push('/payments'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Pending approvals alert banner with accent left border.
+class _PendingApprovalsBanner extends StatelessWidget {
+  final int count;
+  final VoidCallback onTap;
+
+  const _PendingApprovalsBanner({
+    required this.count,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return GlassCard(
+      onTap: onTap,
+      padding: EdgeInsets.zero,
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: Row(
+        children: [
+          // Warning accent strip on the left
+          Container(
+            width: 4,
+            height: 80,
+            color: AppColors.warning,
+          ),
+          const SizedBox(width: AppSpacing.lg),
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.warning.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.pending_actions_rounded,
+              color: AppColors.warning,
+              size: AppSpacing.iconLg,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.lg),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$count Pending Approvals',
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    'Review tenant applications',
+                    style: AppTextStyles.caption.copyWith(
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.lg),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusRound),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Review',
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFFF8F00),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.xxs),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 10,
+                    color: Color(0xFFFF8F00),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -13,6 +13,8 @@ class GlassCard extends ConsumerWidget {
   final EdgeInsetsGeometry? margin;
   final double borderRadius;
   final bool animate;
+  final Clip clipBehavior;
+  final Color? borderColor;
 
   const GlassCard({
     super.key,
@@ -22,6 +24,8 @@ class GlassCard extends ConsumerWidget {
     this.margin,
     this.borderRadius = AppSpacing.radiusXl,
     this.animate = true,
+    this.clipBehavior = Clip.none,
+    this.borderColor,
   });
 
   /// Convenience factory for a simple icon + title + subtitle card.
@@ -88,6 +92,8 @@ class GlassCard extends ConsumerWidget {
       padding: padding ?? const EdgeInsets.all(AppSpacing.lg),
       margin: margin ?? const EdgeInsets.only(bottom: AppSpacing.md),
       borderRadius: borderRadius,
+      clipBehavior: clipBehavior,
+      borderColor: borderColor,
       child: child,
     );
 

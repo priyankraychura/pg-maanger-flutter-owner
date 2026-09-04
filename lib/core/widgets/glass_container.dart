@@ -18,6 +18,7 @@ class GlassContainer extends ConsumerWidget {
   final double? opacity;
   final Color? borderColor;
   final VoidCallback? onTap;
+  final Clip clipBehavior;
 
   const GlassContainer({
     super.key,
@@ -31,6 +32,7 @@ class GlassContainer extends ConsumerWidget {
     this.opacity,
     this.borderColor,
     this.onTap,
+    this.clipBehavior = Clip.none,
   });
 
   @override
@@ -69,15 +71,18 @@ class GlassContainer extends ConsumerWidget {
     }
 
     Widget container = Container(
+      clipBehavior: clipBehavior,
       width: width,
       height: height,
       decoration: BoxDecoration(
         color: fillColor,
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(
-          color: border,
-          width: AppSpacing.glassBorderWidth,
-        ),
+        border: border == Colors.transparent
+            ? null
+            : Border.all(
+                color: border,
+                width: AppSpacing.glassBorderWidth,
+              ),
         boxShadow: shadow,
       ),
       child: innerContent,
