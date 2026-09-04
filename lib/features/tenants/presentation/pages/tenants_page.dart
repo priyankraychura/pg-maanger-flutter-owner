@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/invite_link_builder.dart';
 import '../../../../core/widgets/glass_app_bar.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/widgets/status_badge.dart';
 
 class TenantsPage extends StatelessWidget {
   const TenantsPage({super.key});
+
+  /// Builds a 24-hour tenant invite link and opens it in the browser.
+  Future<void> _openInviteLink(BuildContext context) async {
+    final link = InviteLinkBuilder.buildTenantInviteLink(
+      pgId: 'pg_001',
+      pgName: 'Sunrise PG',
+    );
+
+    final launched = await launchUrl(
+      Uri.parse(link),
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open the invite link')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +46,12 @@ class TenantsPage extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: const GlassAppBar(
+      appBar: GlassAppBar(
         title: 'Tenants',
         showBackButton: false,
+        actionIcon: Icons.mail_outline_rounded,
+        actionTooltip: 'Invite Tenant',
+        onActionPressed: () => _openInviteLink(context),
       ),
       body: ListView.builder(
         padding: EdgeInsets.fromLTRB(
