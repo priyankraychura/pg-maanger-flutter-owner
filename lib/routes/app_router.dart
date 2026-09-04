@@ -9,6 +9,7 @@ import '../features/navigation/navigation_shell.dart';
 import '../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../features/rooms/presentation/pages/rooms_page.dart';
 import '../features/tenants/presentation/pages/tenants_page.dart';
+import '../features/tenants/presentation/pages/add_tenant_page.dart';
 import '../features/payments/presentation/pages/payments_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/invitations/presentation/pages/invitations_page.dart';
@@ -137,6 +138,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/recent-activity',
         builder: (context, state) => const RecentActivityPage(),
+      ),
+      GoRoute(
+        path: '/tenants/add',
+        builder: (context, state) => const AddTenantPage(),
       ),
     ],
   );

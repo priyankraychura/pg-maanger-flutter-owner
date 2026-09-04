@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -104,7 +105,7 @@ class TenantsPage extends StatelessWidget {
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: context.fabBottomInset),
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () => context.push('/tenants/add'),
           backgroundColor: AppColors.primaryOrange,
           child: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white),
         ),
