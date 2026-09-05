@@ -126,7 +126,7 @@ class SettingsPage extends ConsumerWidget {
             title: 'Help & Support',
             subtitle: 'FAQs and contact',
             iconColor: AppColors.warning,
-            onTap: () {},
+            onTap: () => context.push('/help-support'),
           ),
 
           // Privacy Policy

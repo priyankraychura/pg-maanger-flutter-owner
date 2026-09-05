@@ -26,6 +26,7 @@ import '../features/pg_management/presentation/pages/pg_management_page.dart';
 import '../features/pg_management/presentation/pages/pg_form_page.dart';
 import '../features/pg_management/domain/entities/pg_entity.dart';
 import '../features/dashboard/presentation/pages/recent_activity_page.dart';
+import '../features/help/presentation/pages/help_support_page.dart';
 
 // Provide the GoRouter instance using Riverpod
 final routerProvider = Provider<GoRouter>((ref) {
@@ -172,6 +173,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/recent-activity',
         builder: (context, state) => const RecentActivityPage(),
+      ),
+      GoRoute(
+        path: '/help-support',
+        builder: (context, state) => const HelpSupportPage(),
       ),
       GoRoute(
         path: '/tenants/add',
