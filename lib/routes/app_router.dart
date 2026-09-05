@@ -8,6 +8,7 @@ import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/navigation/navigation_shell.dart';
 import '../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../features/rooms/presentation/pages/rooms_page.dart';
+import '../features/rooms/presentation/pages/add_room_page.dart';
 import '../features/tenants/presentation/pages/tenants_page.dart';
 import '../features/tenants/presentation/pages/add_tenant_page.dart';
 import '../features/payments/presentation/pages/payments_page.dart';
@@ -18,6 +19,8 @@ import '../features/complaints/presentation/pages/complaints_page.dart';
 import '../features/menu/presentation/pages/menu_page.dart';
 import '../features/staff/presentation/pages/staff_page.dart';
 import '../features/pg_management/presentation/pages/pg_management_page.dart';
+import '../features/pg_management/presentation/pages/pg_form_page.dart';
+import '../features/pg_management/domain/entities/pg_entity.dart';
 import '../features/dashboard/presentation/pages/recent_activity_page.dart';
 
 // Provide the GoRouter instance using Riverpod
@@ -136,12 +139,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PgManagementPage(),
       ),
       GoRoute(
+        path: '/pg-management/form',
+        builder: (context, state) =>
+            PgFormPage(pg: state.extra as PgEntity?),
+      ),
+      GoRoute(
         path: '/recent-activity',
         builder: (context, state) => const RecentActivityPage(),
       ),
       GoRoute(
         path: '/tenants/add',
         builder: (context, state) => const AddTenantPage(),
+      ),
+      GoRoute(
+        path: '/rooms/add',
+        builder: (context, state) =>
+            AddRoomPage(args: state.extra as AddRoomArgs),
       ),
     ],
   );
