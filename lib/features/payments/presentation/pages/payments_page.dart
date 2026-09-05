@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/rbac/app_module.dart';
+import '../../../../core/rbac/permission_guard.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -7,13 +10,13 @@ import '../../../../core/widgets/glass_app_bar.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/widgets/status_badge.dart';
 
-class PaymentsPage extends StatelessWidget {
+class PaymentsPage extends ConsumerWidget {
   const PaymentsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Mock Data
     final payments = [
       {'name': 'Rahul Kumar', 'amount': '₹8,500', 'date': 'Today', 'status': 'Paid'},
@@ -28,7 +31,9 @@ class PaymentsPage extends StatelessWidget {
         title: 'Payments',
         showBackButton: false,
       ),
-      body: CustomScrollView(
+      body: PermissionGuard(
+        module: AppModule.payments,
+        child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
@@ -157,6 +162,7 @@ class PaymentsPage extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }

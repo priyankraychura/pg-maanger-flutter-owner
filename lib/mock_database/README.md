@@ -10,8 +10,8 @@ hardcoded records any more — datasources read from and write to the tables her
 mock_database/
   mock_database.dart          # MockDatabase singleton — holds the live tables
   tables/                     # one file per table (DynamoDB collection)
-    owners_table.dart         #   owner accounts + kPrimaryOwnerId, kDefaultOwnerModules
-    staff_table.dart          #   manager/helper accounts
+    owners_table.dart         #   owner accounts + kPrimaryOwnerId (super admin)
+    staff_table.dart          #   manager/helper/admin accounts + per-module permissions
     pgs_table.dart            #   PG properties
     rooms_table.dart          #   rooms  (SSOT for room number / rent)
     beds_table.dart           #   beds   (SSOT for occupancy: which tenant in which bed)

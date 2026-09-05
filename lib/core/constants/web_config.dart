@@ -16,4 +16,8 @@ class WebConfig {
 
   /// Tenant invitation page route (see `app/invite/[token]/page.tsx`).
   static const String invitePath = '/invite';
+
+  /// Staff self-registration page route
+  /// (see `app/staff-invite/[token]/page.tsx`).
+  static const String staffInvitePath = '/staff-invite';
 }

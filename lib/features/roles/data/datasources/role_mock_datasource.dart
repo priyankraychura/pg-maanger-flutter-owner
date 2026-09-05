@@ -1,4 +1,6 @@
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/rbac/app_module.dart';
+import '../../../../core/rbac/permission_level.dart';
 import '../../../../mock_database/mock_database.dart';
 import '../../../auth/domain/entities/user_role.dart';
 import '../../domain/entities/staff_entity.dart';
@@ -15,19 +17,55 @@ class RoleMockDatasource implements RoleRepository {
   }
 
   @override
-  Future<StaffEntity> inviteStaff({required String name, required String email, required String phone, required UserRole role, required List<String> assignedPgIds, required List<String> accessibleModules}) async {
+  Future<StaffEntity> inviteStaff({
+    required String name,
+    required String email,
+    required String phone,
+    required UserRole role,
+    required List<String> assignedPgIds,
+    required Map<AppModule, PermissionLevel> permissions,
+  }) async {
     await Future.delayed(const Duration(milliseconds: AppConstants.mockApiDelay));
-    final s = StaffEntity(id: 's_${DateTime.now().millisecondsSinceEpoch}', name: name, email: email, phone: phone, role: role, assignedPgIds: assignedPgIds, accessibleModules: accessibleModules, joinDate: DateTime.now(), status: StaffStatus.pendingInvite);
+    final s = StaffEntity(
+      id: 's_${DateTime.now().millisecondsSinceEpoch}',
+      name: name,
+      email: email,
+      phone: phone,
+      role: role,
+      assignedPgIds: assignedPgIds,
+      permissions: permissions,
+      joinDate: DateTime.now(),
+      status: StaffStatus.pendingInvite,
+    );
     _staff.add(s);
     return s;
   }
 
   @override
-  Future<StaffEntity> updateStaffRole(String id, {UserRole? role, List<String>? assignedPgIds, List<String>? accessibleModules, StaffStatus? status}) async {
+  Future<StaffEntity> updateStaffRole(
+    String id, {
+    String? name,
+    String? phone,
+    UserRole? role,
+    List<String>? assignedPgIds,
+    Map<AppModule, PermissionLevel>? permissions,
+    StaffStatus? status,
+  }) async {
     await Future.delayed(const Duration(milliseconds: AppConstants.mockApiDelay));
     final index = _staff.indexWhere((s) => s.id == id);
     final s = _staff[index];
-    final updated = StaffEntity(id: s.id, name: s.name, email: s.email, phone: s.phone, role: role ?? s.role, assignedPgIds: assignedPgIds ?? s.assignedPgIds, accessibleModules: accessibleModules ?? s.accessibleModules, joinDate: s.joinDate, status: status ?? s.status);
+    final updated = StaffEntity(
+      id: s.id,
+      name: name ?? s.name,
+      email: s.email,
+      phone: phone ?? s.phone,
+      role: role ?? s.role,
+      isSuperAdmin: s.isSuperAdmin,
+      assignedPgIds: assignedPgIds ?? s.assignedPgIds,
+      permissions: permissions ?? s.permissions,
+      joinDate: s.joinDate,
+      status: status ?? s.status,
+    );
     _staff[index] = updated;
     return updated;
   }

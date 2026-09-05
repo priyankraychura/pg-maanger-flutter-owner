@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/rbac/access_provider.dart';
+import '../../../../core/rbac/app_module.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -24,6 +26,7 @@ class PgManagementPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pgsAsync = ref.watch(pgListProvider);
+    final canEdit = ref.watch(accessPolicyProvider).canEdit(AppModule.pgManagement);
 
     return Scaffold(
       appBar: const GlassAppBar(
@@ -42,10 +45,10 @@ class PgManagementPage extends ConsumerWidget {
                 icon: Icons.business_rounded,
                 title: 'No Properties Yet',
                 subtitle: 'Add your first PG to start managing it.',
-                actionLabel: 'Add New PG',
+                actionLabel: canEdit ? 'Add New PG' : null,
                 actionIcon: Icons.add_home_work_rounded,
                 primaryAction: true,
-                onAction: () => _openForm(context),
+                onAction: canEdit ? () => _openForm(context) : null,
               );
             }
 
@@ -70,16 +73,19 @@ class PgManagementPage extends ConsumerWidget {
                       padding: const EdgeInsets.only(bottom: AppSpacing.md),
                       child: _PgCard(
                         pg: pg,
-                        onEdit: () => _openForm(context, pg: pg),
+                        onEdit:
+                            canEdit ? () => _openForm(context, pg: pg) : null,
                       ),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  GlassButton.outlined(
-                    label: 'Add New PG',
-                    icon: Icons.add_home_work_rounded,
-                    onPressed: () => _openForm(context),
-                  ),
+                  if (canEdit) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    GlassButton.outlined(
+                      label: 'Add New PG',
+                      icon: Icons.add_home_work_rounded,
+                      onPressed: () => _openForm(context),
+                    ),
+                  ],
                 ],
               ),
             );
@@ -96,9 +102,9 @@ class PgManagementPage extends ConsumerWidget {
 
 class _PgCard extends StatelessWidget {
   final PgEntity pg;
-  final VoidCallback onEdit;
+  final VoidCallback? onEdit;
 
-  const _PgCard({required this.pg, required this.onEdit});
+  const _PgCard({required this.pg, this.onEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -174,13 +180,14 @@ class _PgCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: AppSpacing.lg),
-
-          GlassButton.outlined(
-            label: 'Edit Details',
-            icon: Icons.edit_outlined,
-            onPressed: onEdit,
-          ),
+          if (onEdit != null) ...[
+            const SizedBox(height: AppSpacing.lg),
+            GlassButton.outlined(
+              label: 'Edit Details',
+              icon: Icons.edit_outlined,
+              onPressed: onEdit,
+            ),
+          ],
         ],
       ),
     );

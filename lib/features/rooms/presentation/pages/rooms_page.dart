@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/rbac/access_provider.dart';
+import '../../../../core/rbac/app_module.dart';
+import '../../../../core/rbac/permission_guard.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -47,14 +51,14 @@ class _Room {
   }
 }
 
-class RoomsPage extends StatefulWidget {
+class RoomsPage extends ConsumerStatefulWidget {
   const RoomsPage({super.key});
 
   @override
-  State<RoomsPage> createState() => _RoomsPageState();
+  ConsumerState<RoomsPage> createState() => _RoomsPageState();
 }
 
-class _RoomsPageState extends State<RoomsPage> {
+class _RoomsPageState extends ConsumerState<RoomsPage> {
   // ─── Mock data ─────────────────────────────────────
   final List<_Student> _students = [
     _Student(id: 's1', name: 'Ankit Kumar', roomNumber: '101'),
@@ -80,13 +84,16 @@ class _RoomsPageState extends State<RoomsPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
+    final canEdit = ref.watch(accessPolicyProvider).canEdit(AppModule.rooms);
 
     return Scaffold(
       appBar: const GlassAppBar(
         title: 'Manage Rooms',
         showBackButton: false,
       ),
-      body: ListView.builder(
+      body: PermissionGuard(
+        module: AppModule.rooms,
+        child: ListView.builder(
         padding: EdgeInsets.fromLTRB(
           AppSpacing.screenPadding,
           AppSpacing.screenPadding,
@@ -153,15 +160,18 @@ class _RoomsPageState extends State<RoomsPage> {
             ),
           );
         },
-      ),
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: context.fabBottomInset),
-        child: FloatingActionButton(
-          onPressed: _openAddRoom,
-          backgroundColor: AppColors.primaryOrange,
-          child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
+      floatingActionButton: canEdit
+          ? Padding(
+              padding: EdgeInsets.only(bottom: context.fabBottomInset),
+              child: FloatingActionButton(
+                onPressed: _openAddRoom,
+                backgroundColor: AppColors.primaryOrange,
+                child: const Icon(Icons.add, color: Colors.white),
+              ),
+            )
+          : null,
     );
   }
 

@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/rbac/access_policy.dart';
+import '../core/rbac/route_access.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/register_page.dart';
 import '../features/auth/presentation/pages/forgot_password_page.dart';
@@ -18,6 +20,8 @@ import '../features/notices/presentation/pages/notices_page.dart';
 import '../features/complaints/presentation/pages/complaints_page.dart';
 import '../features/menu/presentation/pages/menu_page.dart';
 import '../features/staff/presentation/pages/staff_page.dart';
+import '../features/roles/presentation/pages/staff_form_page.dart';
+import '../features/roles/domain/entities/staff_entity.dart';
 import '../features/pg_management/presentation/pages/pg_management_page.dart';
 import '../features/pg_management/presentation/pages/pg_form_page.dart';
 import '../features/pg_management/domain/entities/pg_entity.dart';
@@ -30,13 +34,30 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/login',
     redirect: (context, state) {
-      final isLoggingIn = state.uri.path == '/login' ||
-          state.uri.path == '/register' ||
-          state.uri.path == '/forgot-password';
-      final isLoggedIn = authState.hasValue && authState.value != null;
+      final path = state.uri.path;
+      final isLoggingIn = path == '/login' ||
+          path == '/register' ||
+          path == '/forgot-password';
+      final owner = authState.value;
+      final isLoggedIn = authState.hasValue && owner != null;
 
       if (!isLoggedIn && !isLoggingIn) return '/login';
       if (isLoggedIn && isLoggingIn) return '/dashboard';
+
+      // Permission guard: a signed-in user cannot open a module they can't
+      // view — send them back to their dashboard. This backs up the hidden
+      // entry points so restricted areas are unreachable even by deep link.
+      if (isLoggedIn) {
+        final module = requiredModuleForPath(path);
+        if (module != null) {
+          final policy = AccessPolicy(
+            role: owner.role,
+            isSuperAdmin: owner.isSuperAdmin,
+            permissions: owner.permissions,
+          );
+          if (!policy.canView(module)) return '/dashboard';
+        }
+      }
 
       return null;
     },
@@ -133,6 +154,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/staff',
         builder: (context, state) => const StaffPage(),
+      ),
+      GoRoute(
+        path: '/staff/form',
+        builder: (context, state) =>
+            StaffFormPage(staff: state.extra as StaffEntity?),
       ),
       GoRoute(
         path: '/pg-management',

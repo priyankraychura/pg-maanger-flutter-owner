@@ -1,6 +1,13 @@
+import '../../../../core/rbac/app_module.dart';
+import '../../../../core/rbac/permission_level.dart';
 import 'user_role.dart';
 
-/// Owner/staff entity — pure domain object with no serialization logic.
+/// Owner/staff principal — the currently signed-in account. Pure domain object
+/// with no serialization logic.
+///
+/// A single [OwnerEntity] represents whoever is signed in, whether that is the
+/// account owner (the super admin) or an invited staff member. Access control
+/// is driven by [role], [isSuperAdmin] and the per-module [permissions] map.
 class OwnerEntity {
   final String id;
   final String name;
@@ -8,8 +15,17 @@ class OwnerEntity {
   final String phone;
   final String? profileImageUrl;
   final UserRole role;
+
+  /// True only for the account owner — an admin whose access no other admin may
+  /// modify. See `AccessPolicy`.
+  final bool isSuperAdmin;
+
   final List<String> assignedPgIds;
-  final List<String> accessibleModules;
+
+  /// Per-module access levels. For the owner/admins this is effectively
+  /// full access; for managers/helpers it governs what they can see and edit.
+  final Map<AppModule, PermissionLevel> permissions;
+
   final DateTime? joinDate;
 
   const OwnerEntity({
@@ -19,8 +35,9 @@ class OwnerEntity {
     required this.phone,
     this.profileImageUrl,
     required this.role,
+    this.isSuperAdmin = false,
     this.assignedPgIds = const [],
-    this.accessibleModules = const [],
+    this.permissions = const {},
     this.joinDate,
   });
 
@@ -30,8 +47,9 @@ class OwnerEntity {
     String? phone,
     String? profileImageUrl,
     UserRole? role,
+    bool? isSuperAdmin,
     List<String>? assignedPgIds,
-    List<String>? accessibleModules,
+    Map<AppModule, PermissionLevel>? permissions,
     DateTime? joinDate,
   }) {
     return OwnerEntity(
@@ -41,8 +59,9 @@ class OwnerEntity {
       phone: phone ?? this.phone,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       role: role ?? this.role,
+      isSuperAdmin: isSuperAdmin ?? this.isSuperAdmin,
       assignedPgIds: assignedPgIds ?? this.assignedPgIds,
-      accessibleModules: accessibleModules ?? this.accessibleModules,
+      permissions: permissions ?? this.permissions,
       joinDate: joinDate ?? this.joinDate,
     );
   }

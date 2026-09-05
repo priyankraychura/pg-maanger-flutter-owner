@@ -1,9 +1,12 @@
-/// User role enum defining access levels.
+/// User role enum defining the kind of account.
+///
+/// Owner accounts use [admin] together with a super-admin flag on the principal
+/// (see `OwnerEntity.isSuperAdmin`). These three roles are the ones that can be
+/// invited. Actual access is decided centrally by `AccessPolicy`, not by the
+/// role alone.
 enum UserRole { admin, manager, helper }
 
-/// Extension providing granular permission checks per role.
-/// Admin can invite any role and select which modules they can access.
-extension UserRolePermissions on UserRole {
+extension UserRoleInfo on UserRole {
   String get displayName {
     switch (this) {
       case UserRole.admin:
@@ -15,103 +18,25 @@ extension UserRolePermissions on UserRole {
     }
   }
 
-  bool get canManagePGs {
+  String get key {
     switch (this) {
       case UserRole.admin:
-        return true;
+        return 'admin';
       case UserRole.manager:
+        return 'manager';
       case UserRole.helper:
-        return false;
+        return 'helper';
     }
   }
 
-  bool get canManageRooms {
-    switch (this) {
-      case UserRole.admin:
-      case UserRole.manager:
-        return true;
-      case UserRole.helper:
-        return false;
-    }
-  }
-
-  bool get canManageTenants {
-    switch (this) {
-      case UserRole.admin:
-      case UserRole.manager:
-        return true;
-      case UserRole.helper:
-        return false;
-    }
-  }
-
-  bool get canManagePayments {
-    switch (this) {
-      case UserRole.admin:
-      case UserRole.manager:
-        return true;
-      case UserRole.helper:
-        return false;
-    }
-  }
-
-  bool get canRespondComplaints {
-    switch (this) {
-      case UserRole.admin:
-      case UserRole.manager:
-        return true;
-      case UserRole.helper:
-        return false;
-    }
-  }
-
-  bool get canIssueNotices {
-    switch (this) {
-      case UserRole.admin:
-      case UserRole.manager:
-        return true;
-      case UserRole.helper:
-        return false;
-    }
-  }
-
-  bool get canEditMenu {
-    switch (this) {
-      case UserRole.admin:
-      case UserRole.manager:
-        return true;
-      case UserRole.helper:
-        return false;
-    }
-  }
-
-  bool get canInviteTenants {
-    switch (this) {
-      case UserRole.admin:
-      case UserRole.manager:
-        return true;
-      case UserRole.helper:
-        return false;
-    }
-  }
-
-  bool get canManageStaff {
-    switch (this) {
-      case UserRole.admin:
-        return true;
-      case UserRole.manager:
-      case UserRole.helper:
-        return false;
-    }
-  }
-
-  bool get canManageWifi {
-    switch (this) {
-      case UserRole.admin:
-      case UserRole.manager:
-        return true;
-      case UserRole.helper:
-        return false;
+  static UserRole fromKey(String? key) {
+    switch (key) {
+      case 'admin':
+        return UserRole.admin;
+      case 'helper':
+        return UserRole.helper;
+      default:
+        return UserRole.manager;
     }
   }
 }

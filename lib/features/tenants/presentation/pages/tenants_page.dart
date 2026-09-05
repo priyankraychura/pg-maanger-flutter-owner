@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/rbac/access_provider.dart';
+import '../../../../core/rbac/app_module.dart';
+import '../../../../core/rbac/permission_guard.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -10,7 +14,7 @@ import '../../../../core/widgets/glass_app_bar.dart';
 import '../../../../core/widgets/glass_card.dart';
 import '../../../../core/widgets/status_badge.dart';
 
-class TenantsPage extends StatelessWidget {
+class TenantsPage extends ConsumerWidget {
   const TenantsPage({super.key});
 
   /// Builds a 24-hour tenant invite link and opens it in the browser.
@@ -33,9 +37,10 @@ class TenantsPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+    final canEdit = ref.watch(accessPolicyProvider).canEdit(AppModule.tenants);
+
     // Mock Data
     final tenants = [
       {'name': 'Rahul Kumar', 'room': '101', 'status': 'Active', 'rentStatus': 'Paid'},
@@ -49,11 +54,13 @@ class TenantsPage extends StatelessWidget {
       appBar: GlassAppBar(
         title: 'Tenants',
         showBackButton: false,
-        actionIcon: Icons.mail_outline_rounded,
+        actionIcon: canEdit ? Icons.mail_outline_rounded : null,
         actionTooltip: 'Invite Tenant',
-        onActionPressed: () => _openInviteLink(context),
+        onActionPressed: canEdit ? () => _openInviteLink(context) : null,
       ),
-      body: ListView.builder(
+      body: PermissionGuard(
+        module: AppModule.tenants,
+        child: ListView.builder(
         padding: EdgeInsets.fromLTRB(
           AppSpacing.screenPadding,
           AppSpacing.screenPadding,
@@ -125,15 +132,19 @@ class TenantsPage extends StatelessWidget {
             ),
           );
         },
-      ),
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: context.fabBottomInset),
-        child: FloatingActionButton(
-          onPressed: () => context.push('/tenants/add'),
-          backgroundColor: AppColors.primaryOrange,
-          child: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white),
         ),
       ),
+      floatingActionButton: canEdit
+          ? Padding(
+              padding: EdgeInsets.only(bottom: context.fabBottomInset),
+              child: FloatingActionButton(
+                onPressed: () => context.push('/tenants/add'),
+                backgroundColor: AppColors.primaryOrange,
+                child: const Icon(Icons.person_add_alt_1_rounded,
+                    color: Colors.white),
+              ),
+            )
+          : null,
     );
   }
 }

@@ -11,6 +11,9 @@ import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/glass_card.dart';
 
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/rbac/access_policy.dart';
+import '../../../../core/rbac/access_provider.dart';
+import '../../../../core/rbac/app_module.dart';
 import '../../../../core/providers/pg_selection_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../pg_management/presentation/providers/pg_provider.dart';
@@ -27,9 +30,10 @@ class DashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final owner = ref.watch(currentOwnerProvider);
-    final pgsAsync = ref.watch(pgListProvider);
+    final pgsAsync = ref.watch(accessiblePgListProvider);
     final selectedPgId = ref.watch(pgSelectionProvider);
     final dashboardAsync = ref.watch(dashboardProvider);
+    final access = ref.watch(accessPolicyProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -37,8 +41,12 @@ class DashboardPage extends ConsumerWidget {
           loading: () => const CommonLoader(message: 'Loading...'),
           error: (e, _) => Center(child: Text('Error: $e')),
           data: (pgs) {
-            // Auto-select first PG if none selected
-            if (selectedPgId == null && pgs.isNotEmpty) {
+            // Select the first accessible PG when none is selected, or when the
+            // current selection isn't one this user is allowed to see (e.g.
+            // after switching from an owner session to a staff one).
+            final selectionValid =
+                selectedPgId != null && pgs.any((pg) => pg.id == selectedPgId);
+            if (!selectionValid && pgs.isNotEmpty) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 ref.read(pgSelectionProvider.notifier).selectPg(pgs.first.id);
               });
@@ -55,7 +63,7 @@ class DashboardPage extends ConsumerWidget {
                 // Wait for the fresh data so the refresh spinner reflects the
                 // actual reload instead of vanishing immediately.
                 await Future.wait([
-                  ref.read(pgListProvider.future),
+                  ref.read(accessiblePgListProvider.future),
                   ref.read(dashboardProvider.future),
                 ]).catchError((_) => <Object>[]);
               },
@@ -102,6 +110,7 @@ class DashboardPage extends ConsumerWidget {
                                 ),
                               ),
                               // Notification bell with dot badge
+                              if (access.canView(AppModule.notices))
                               GestureDetector(
                                 onTap: () => context.push('/notices'),
                                 child: Stack(
@@ -305,14 +314,15 @@ class DashboardPage extends ConsumerWidget {
   }
 }
 
-class _DashboardContent extends StatelessWidget {
+class _DashboardContent extends ConsumerWidget {
   final OwnerDashboardEntity data;
 
   const _DashboardContent({required this.data});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final access = ref.watch(accessPolicyProvider);
     final occupancyPercent = data.totalBeds > 0
         ? (data.occupiedBeds / data.totalBeds)
         : 0.0;
@@ -484,13 +494,14 @@ class _DashboardContent extends StatelessWidget {
           const SizedBox(height: AppSpacing.xxxl),
 
           // ─── Quick Actions ────────────────────────────
-          const SectionHeader(title: 'Quick Actions'),
-          _QuickActionsRow(),
-
-          const SizedBox(height: AppSpacing.xxxl),
+          if (_QuickActionsRow.hasAny(access)) ...[
+            const SectionHeader(title: 'Quick Actions'),
+            _QuickActionsRow(access: access),
+            const SizedBox(height: AppSpacing.xxxl),
+          ],
 
           // ─── Pending Approvals Banner ─────────────────
-          if (data.pendingApprovals > 0) ...[
+          if (data.pendingApprovals > 0 && access.canView(AppModule.tenants)) ...[
             _PendingApprovalsBanner(
               count: data.pendingApprovals,
               onTap: () => context.push('/tenants'),
@@ -518,10 +529,46 @@ class _DashboardContent extends StatelessWidget {
   }
 }
 
+/// A single quick-action, tied to the module it navigates to so it can be
+/// hidden when the user lacks access.
+class _QuickAction {
+  final AppModule module;
+  final IconData icon;
+  final String label;
+  final Color color;
+  final String route;
+  const _QuickAction(
+      this.module, this.icon, this.label, this.color, this.route);
+}
+
 /// Quick actions horizontal scroll with gradient fade hint.
+///
+/// Only actions for modules the user can view are shown.
 class _QuickActionsRow extends StatelessWidget {
+  final AccessPolicy access;
+
+  const _QuickActionsRow({required this.access});
+
+  static const List<_QuickAction> _actions = [
+    _QuickAction(AppModule.invitations, Icons.person_add_rounded, 'Add Tenant',
+        AppColors.primaryOrange, '/invitations'),
+    _QuickAction(AppModule.notices, Icons.campaign_rounded, 'Notices',
+        AppColors.info, '/notices'),
+    _QuickAction(AppModule.complaints, Icons.report_problem_rounded,
+        'Complaints', AppColors.warning, '/complaints'),
+    _QuickAction(AppModule.menu, Icons.restaurant_menu_rounded, 'Menu',
+        AppColors.accentTeal, '/menu'),
+    _QuickAction(AppModule.payments, Icons.account_balance_wallet_rounded,
+        'Payments', AppColors.success, '/payments'),
+  ];
+
+  static bool hasAny(AccessPolicy access) =>
+      _actions.any((a) => access.canView(a.module));
+
   @override
   Widget build(BuildContext context) {
+    final visible =
+        _actions.where((a) => access.canView(a.module)).toList(growable: false);
 
     return ShaderMask(
       shaderCallback: (Rect bounds) {
@@ -543,40 +590,15 @@ class _QuickActionsRow extends StatelessWidget {
         padding: const EdgeInsets.only(right: AppSpacing.xxxl),
         child: Row(
           children: [
-            QuickActionCard(
-              icon: Icons.person_add_rounded,
-              label: 'Add Tenant',
-              color: AppColors.primaryOrange,
-              onTap: () => context.push('/invitations'),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            QuickActionCard(
-              icon: Icons.campaign_rounded,
-              label: 'Notices',
-              color: AppColors.info,
-              onTap: () => context.push('/notices'),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            QuickActionCard(
-              icon: Icons.report_problem_rounded,
-              label: 'Complaints',
-              color: AppColors.warning,
-              onTap: () => context.push('/complaints'),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            QuickActionCard(
-              icon: Icons.restaurant_menu_rounded,
-              label: 'Menu',
-              color: AppColors.accentTeal,
-              onTap: () => context.push('/menu'),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            QuickActionCard(
-              icon: Icons.account_balance_wallet_rounded,
-              label: 'Payments',
-              color: AppColors.success,
-              onTap: () => context.push('/payments'),
-            ),
+            for (var i = 0; i < visible.length; i++) ...[
+              if (i > 0) const SizedBox(width: AppSpacing.md),
+              QuickActionCard(
+                icon: visible[i].icon,
+                label: visible[i].label,
+                color: visible[i].color,
+                onTap: () => context.push(visible[i].route),
+              ),
+            ],
           ],
         ),
       ),
