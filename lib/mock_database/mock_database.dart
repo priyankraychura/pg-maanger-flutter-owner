@@ -2,7 +2,7 @@ import '../features/auth/domain/entities/owner_entity.dart';
 import '../features/complaints/domain/entities/complaint_entity.dart';
 import '../features/invitations/domain/entities/invitation_entity.dart';
 import '../features/leave_notices/domain/entities/leave_notice_entity.dart';
-import '../features/menu/domain/entities/meal_entity.dart';
+import '../features/menu/domain/entities/menu_plan_entity.dart';
 import '../features/notices/domain/entities/notice_entity.dart';
 import '../features/payments/domain/entities/payment_entity.dart';
 import '../features/pg_management/domain/entities/pg_entity.dart';
@@ -64,7 +64,7 @@ class MockDatabase {
   late final List<ComplaintEntity> complaints = List.of(seedComplaints(tenants: tenants));
   late final List<LeaveNoticeEntity> leaveNotices = List.of(seedLeaveNotices(tenants: tenants));
   late final List<NoticeEntity> notices = List.of(seedNotices());
-  late final List<MealEntity> menus = List.of(seedMenus());
+  late final List<MenuPlanEntity> menuPlans = List.of(seedMenuPlans());
   late final List<WifiEntity> wifi = List.of(seedWifi());
   late final List<InvitationEntity> invitations = List.of(seedInvitations());
 }

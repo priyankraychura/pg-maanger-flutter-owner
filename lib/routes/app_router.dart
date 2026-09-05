@@ -20,6 +20,9 @@ import '../features/notices/presentation/pages/notices_page.dart';
 import '../features/notices/presentation/pages/create_notice_page.dart';
 import '../features/complaints/presentation/pages/complaints_page.dart';
 import '../features/menu/presentation/pages/menu_page.dart';
+import '../features/menu/presentation/pages/configure_menu_page.dart';
+import '../features/menu/presentation/pages/edit_day_meals_page.dart';
+import '../features/menu/domain/entities/menu_plan_entity.dart';
 import '../features/staff/presentation/pages/staff_page.dart';
 import '../features/roles/presentation/pages/staff_form_page.dart';
 import '../features/roles/domain/entities/staff_entity.dart';
@@ -156,6 +159,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/menu',
         builder: (context, state) => const MenuPage(),
+      ),
+      GoRoute(
+        path: '/menu/configure',
+        builder: (context, state) =>
+            ConfigureMenuPage(existing: state.extra as MenuPlanEntity?),
+      ),
+      GoRoute(
+        path: '/menu/day',
+        builder: (context, state) =>
+            EditDayMealsPage(args: state.extra as EditDayMealsArgs),
       ),
       GoRoute(
         path: '/staff',
