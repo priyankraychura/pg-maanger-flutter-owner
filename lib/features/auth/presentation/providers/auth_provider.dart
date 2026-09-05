@@ -45,6 +45,46 @@ class AuthNotifier extends StateNotifier<AsyncValue<OwnerEntity?>> {
     }
   }
 
+  /// Update the signed-in owner's personal details.
+  ///
+  /// Keeps the current [OwnerEntity] in state throughout (never flips to
+  /// loading) so route guards watching the auth state don't briefly see a
+  /// signed-out user. Throws on failure for the caller to surface.
+  Future<void> updateProfile({
+    required String name,
+    required String email,
+    required String phone,
+  }) async {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    final updated = await _repository.updateProfile(
+      current: current,
+      name: name,
+      email: email,
+      phone: phone,
+    );
+    state = AsyncValue.data(updated);
+  }
+
+  /// Change the signed-in owner's password after verifying the current one.
+  ///
+  /// Throws (e.g. when the current password is wrong) for the caller to handle;
+  /// the auth state is left untouched.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    await _repository.changePassword(
+      email: current.email,
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+  }
+
   Future<void> logout() async {
     await _repository.logout();
     state = const AsyncValue.data(null);

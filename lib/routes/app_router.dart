@@ -15,6 +15,7 @@ import '../features/tenants/presentation/pages/tenants_page.dart';
 import '../features/tenants/presentation/pages/add_tenant_page.dart';
 import '../features/payments/presentation/pages/payments_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
+import '../features/settings/presentation/pages/profile_page.dart';
 import '../features/invitations/presentation/pages/invitations_page.dart';
 import '../features/notices/presentation/pages/notices_page.dart';
 import '../features/notices/presentation/pages/create_notice_page.dart';
@@ -195,6 +196,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/help-support',
         builder: (context, state) => const HelpSupportPage(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfilePage(),
       ),
       GoRoute(
         path: '/tenants/add',

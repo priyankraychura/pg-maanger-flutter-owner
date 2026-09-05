@@ -39,7 +39,7 @@ class SettingsPage extends ConsumerWidget {
         children: [
           // Profile Card
           GlassCard(
-            onTap: () {},
+            onTap: () => context.push('/profile'),
             child: Row(
               children: [
                 CircleAvatar(

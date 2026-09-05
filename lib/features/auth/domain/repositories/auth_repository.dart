@@ -8,6 +8,25 @@ abstract class AuthRepository {
 
   Future<void> forgotPassword({required String email});
   Future<void> resetPassword({required String email, required String newPassword});
+
+  /// Update the signed-in account's personal details.
+  Future<OwnerEntity> updateProfile({
+    required OwnerEntity current,
+    required String name,
+    required String email,
+    required String phone,
+  });
+
+  /// Change the signed-in account's password.
+  ///
+  /// Verifies [currentPassword] against the account identified by [email] and
+  /// throws when it does not match; otherwise the password is updated.
+  Future<void> changePassword({
+    required String email,
+    required String currentPassword,
+    required String newPassword,
+  });
+
   Future<void> logout();
 }
 
