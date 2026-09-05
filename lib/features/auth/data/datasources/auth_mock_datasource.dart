@@ -1,4 +1,6 @@
 import '../../../../core/constants/app_constants.dart';
+import '../../../../mock_database/mock_database.dart';
+import '../../../../mock_database/tables/owners_table.dart';
 import '../../domain/entities/owner_entity.dart';
 import '../../domain/entities/user_role.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -13,20 +15,8 @@ class AuthMockDatasource implements AuthRepository {
       const Duration(milliseconds: AppConstants.mockApiDelay),
     );
 
-    return OwnerEntity(
-      id: 'owner_001',
-      name: 'Priyank Sharma',
-      email: email,
-      phone: '9876543210',
-      role: UserRole.admin,
-      assignedPgIds: ['pg_001', 'pg_002'],
-      accessibleModules: [
-        'dashboard', 'rooms', 'tenants', 'payments',
-        'complaints', 'notices', 'menu', 'wifi',
-        'leave_notices', 'invitations', 'roles', 'settings',
-      ],
-      joinDate: DateTime(2024, 3, 15),
-    );
+    // Sign the primary owner in, echoing back the email that was entered.
+    return MockDatabase.instance.owners.first.copyWith(email: email);
   }
 
   @override
@@ -42,11 +32,7 @@ class AuthMockDatasource implements AuthRepository {
       phone: data.phone,
       role: UserRole.admin,
       assignedPgIds: const ['pg_new_001'],
-      accessibleModules: [
-        'dashboard', 'rooms', 'tenants', 'payments',
-        'complaints', 'notices', 'menu', 'wifi',
-        'leave_notices', 'invitations', 'roles', 'settings',
-      ],
+      accessibleModules: kDefaultOwnerModules,
       joinDate: DateTime.now(),
     );
   }
