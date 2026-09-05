@@ -550,8 +550,8 @@ class _QuickActionsRow extends StatelessWidget {
   const _QuickActionsRow({required this.access});
 
   static const List<_QuickAction> _actions = [
-    _QuickAction(AppModule.invitations, Icons.person_add_rounded, 'Add Tenant',
-        AppColors.primaryOrange, '/invitations'),
+    _QuickAction(AppModule.tenants, Icons.person_add_rounded, 'Add Tenant',
+        AppColors.primaryOrange, '/tenants/add'),
     _QuickAction(AppModule.notices, Icons.campaign_rounded, 'Notices',
         AppColors.info, '/notices'),
     _QuickAction(AppModule.complaints, Icons.report_problem_rounded,

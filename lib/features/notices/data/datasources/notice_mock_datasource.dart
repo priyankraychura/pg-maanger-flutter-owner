@@ -14,19 +14,19 @@ class NoticeMockDatasource implements NoticeRepository {
   }
 
   @override
-  Future<NoticeEntity> createNotice({required String pgId, required String title, required String description, required NoticePriority priority, DateTime? expiresAt}) async {
+  Future<NoticeEntity> createNotice({required String pgId, required String title, required String category, required String description, required NoticePriority priority, DateTime? expiresAt}) async {
     await Future.delayed(const Duration(milliseconds: AppConstants.mockApiDelay));
-    final notice = NoticeEntity(id: 'n_${DateTime.now().millisecondsSinceEpoch}', pgId: pgId, title: title, description: description, priority: priority, createdAt: DateTime.now(), expiresAt: expiresAt, createdBy: kPrimaryOwnerId);
+    final notice = NoticeEntity(id: 'n_${DateTime.now().millisecondsSinceEpoch}', pgId: pgId, title: title, category: category, description: description, priority: priority, createdAt: DateTime.now(), expiresAt: expiresAt, createdBy: kPrimaryOwnerId);
     _notices.insert(0, notice);
     return notice;
   }
 
   @override
-  Future<NoticeEntity> updateNotice(String id, {String? title, String? description, NoticePriority? priority, DateTime? expiresAt, bool? isActive}) async {
+  Future<NoticeEntity> updateNotice(String id, {String? title, String? category, String? description, NoticePriority? priority, DateTime? expiresAt, bool? isActive}) async {
     await Future.delayed(const Duration(milliseconds: AppConstants.mockApiDelay));
     final index = _notices.indexWhere((n) => n.id == id);
     final n = _notices[index];
-    final updated = NoticeEntity(id: n.id, pgId: n.pgId, title: title ?? n.title, description: description ?? n.description, priority: priority ?? n.priority, createdAt: n.createdAt, expiresAt: expiresAt ?? n.expiresAt, createdBy: n.createdBy, isActive: isActive ?? n.isActive);
+    final updated = NoticeEntity(id: n.id, pgId: n.pgId, title: title ?? n.title, category: category ?? n.category, description: description ?? n.description, priority: priority ?? n.priority, createdAt: n.createdAt, expiresAt: expiresAt ?? n.expiresAt, createdBy: n.createdBy, isActive: isActive ?? n.isActive);
     _notices[index] = updated;
     return updated;
   }

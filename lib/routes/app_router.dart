@@ -17,6 +17,7 @@ import '../features/payments/presentation/pages/payments_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/invitations/presentation/pages/invitations_page.dart';
 import '../features/notices/presentation/pages/notices_page.dart';
+import '../features/notices/presentation/pages/create_notice_page.dart';
 import '../features/complaints/presentation/pages/complaints_page.dart';
 import '../features/menu/presentation/pages/menu_page.dart';
 import '../features/staff/presentation/pages/staff_page.dart';
@@ -143,6 +144,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/notices',
         builder: (context, state) => const NoticesPage(),
+      ),
+      GoRoute(
+        path: '/notices/create',
+        builder: (context, state) => const CreateNoticePage(),
       ),
       GoRoute(
         path: '/complaints',
